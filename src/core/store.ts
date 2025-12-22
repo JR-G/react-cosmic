@@ -1,5 +1,6 @@
 import * as Y from "yjs";
 import type { OrbitConfig, StorageAdapter, OrbitValue } from "./types.ts";
+import { TabSync } from "../sync/tab-sync.ts";
 
 /**
  * Orbit store that manages CRDT state with automatic persistence.
@@ -22,6 +23,7 @@ import type { OrbitConfig, StorageAdapter, OrbitValue } from "./types.ts";
 export class OrbitStore {
   private ydoc: Y.Doc;
   private storage?: StorageAdapter;
+  private tabSync?: TabSync;
   private persistDebounceMs: number;
   private persistTimer: ReturnType<typeof setTimeout> | null = null;
   private initialized = false;
@@ -33,6 +35,10 @@ export class OrbitStore {
     this.storage = config.storage;
     this.persistDebounceMs = config.persistDebounceMs ?? 300;
     this.ydoc = new Y.Doc();
+
+    if (config.enableTabSync !== false) {
+      this.tabSync = new TabSync(this.storeId, this.ydoc);
+    }
 
     if (this.storage !== undefined) {
       this.ydoc.on("update", this.handleUpdate.bind(this));
@@ -55,6 +61,10 @@ export class OrbitStore {
       if (state !== null) {
         Y.applyUpdate(this.ydoc, state);
       }
+    }
+
+    if (this.tabSync !== undefined) {
+      this.tabSync.init();
     }
 
     this.initialized = true;
@@ -144,6 +154,10 @@ export class OrbitStore {
     }
 
     await this.persist();
+
+    if (this.tabSync !== undefined) {
+      this.tabSync.dispose();
+    }
 
     this.ydoc.destroy();
 
