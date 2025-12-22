@@ -56,17 +56,17 @@ export interface StorageAdapter {
 }
 
 /**
- * Configuration options for initializing an Orbit document.
+ * Configuration options for initializing an Orbit store.
  */
-export interface DocumentConfig {
+export interface OrbitConfig {
   /**
-   * Unique identifier for this document.
-   * Documents with the same ID will sync their state.
+   * Unique identifier for this store.
+   * Stores with the same ID will sync their state.
    */
-  documentId: string;
+  storeId: string;
 
   /**
-   * Storage adapter instance for persisting document state.
+   * Storage adapter instance for persisting state.
    * If not provided, state will only exist in memory.
    */
   storage?: StorageAdapter;
