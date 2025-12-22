@@ -24,7 +24,9 @@
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
     "docs": "typedoc src/index.ts",
-    "demo": "bun --hot examples/basic-form/index.html"
+    "demo": "bun --hot examples/basic-form/index.html",
+    "demo:collab": "bun --hot examples/websocket-sync/index.html",
+    "demo:server": "bunx y-websocket-server --port 1234"
   },
   "keywords": [
     "react",
@@ -41,6 +43,7 @@
     "react": "^18.0.0"
   },
   "dependencies": {
+    "y-websocket": "^2.0.5",
     "yjs": "^13.6.20"
   },
   "devDependencies": {
@@ -49,6 +52,8 @@
     "@testing-library/react-hooks": "^8.0.1",
     "@types/bun": "^1.3.5",
     "@types/react": "^18.3.18",
+    "@types/react-dom": "^19.2.3",
+    "@types/ws": "^8.18.1",
     "@typescript-eslint/eslint-plugin": "^8.19.1",
     "@typescript-eslint/parser": "^8.19.1",
     "@vitest/ui": "^2.1.8",

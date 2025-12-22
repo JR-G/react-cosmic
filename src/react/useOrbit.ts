@@ -1,4 +1,4 @@
-import { useSyncExternalStore, useCallback, useMemo } from "react";
+import { useSyncExternalStore, useCallback, useMemo, useRef, useEffect } from "react";
 import type { OrbitValue } from "../core/types.ts";
 import { useOrbitStore } from "./provider.tsx";
 
@@ -45,21 +45,28 @@ export function useOrbit<T extends OrbitValue>(
 
   const subscribe = useCallback(
     (callback: () => void) => {
-      const observer = () => {
-        callback();
+      const observer = (event: any) => {
+        if (event.keysChanged.has(key)) {
+          callback();
+        }
       };
       map.observe(observer);
       return () => {
         map.unobserve(observer);
       };
     },
-    [map]
+    [map, key]
   );
+
+  const initialRef = useRef(initialValue);
+  useEffect(() => {
+    initialRef.current = initialValue;
+  }, [initialValue]);
 
   const getSnapshot = useCallback(() => {
     const existing = map.get(key);
-    return (existing !== undefined ? existing : initialValue) as T;
-  }, [map, key, initialValue]);
+    return (existing !== undefined ? existing : initialRef.current) as T;
+  }, [map, key]);
 
   const value = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 

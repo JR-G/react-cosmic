@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useContext,
   useEffect,
@@ -46,19 +46,52 @@ export interface OrbitProviderProps {
    * Defaults to 300ms.
    */
   persistDebounceMs?: number;
+
+  /**
+   * WebSocket server URL for cross-device and multi-user sync.
+   * If provided, enables real-time collaboration via WebSocket.
+   * Example: 'ws://localhost:1234' or 'wss://your-server.com'
+   */
+  websocketUrl?: string;
+
+  /**
+   * Optional configuration for WebSocket connection.
+   */
+  websocketOptions?: {
+    maxRetries?: number;
+    retryDelay?: number;
+    protocols?: string | string[];
+  };
 }
 
 /**
  * Provider component that initializes and provides the Orbit store to child components.
  *
  * Wrap your app or component tree with this provider to enable Orbit state management.
- * All hooks (useOrbit, useOrbitText, useOrbitObject) must be used within this provider.
+ * All hooks (useOrbit, useOrbitText, useOrbitObject, useOrbitStatus, useOrbitAwareness)
+ * must be used within this provider.
  *
  * @example
+ * Basic usage:
  * ```typescript
  * function App() {
  *   return (
  *     <OrbitProvider storeId="my-app">
+ *       <MyComponent />
+ *     </OrbitProvider>
+ *   );
+ * }
+ * ```
+ *
+ * @example
+ * With WebSocket collaboration:
+ * ```typescript
+ * function App() {
+ *   return (
+ *     <OrbitProvider
+ *       storeId="my-app"
+ *       websocketUrl="ws://localhost:1234"
+ *     >
  *       <MyComponent />
  *     </OrbitProvider>
  *   );
@@ -71,6 +104,8 @@ export function OrbitProvider({
   enableStorage = true,
   enableTabSync = true,
   persistDebounceMs,
+  websocketUrl,
+  websocketOptions,
 }: OrbitProviderProps): ReactNode {
   const [store, setStore] = useState<OrbitStore | null>(null);
 
@@ -79,6 +114,8 @@ export function OrbitProvider({
       storeId,
       enableTabSync,
       persistDebounceMs,
+      websocketUrl,
+      websocketOptions,
     };
 
     if (enableStorage) {
@@ -94,7 +131,7 @@ export function OrbitProvider({
     return () => {
       newStore.dispose();
     };
-  }, [storeId, enableStorage, enableTabSync, persistDebounceMs]);
+  }, [storeId, enableStorage, enableTabSync, persistDebounceMs, websocketUrl, websocketOptions]);
 
   if (store === null) {
     return null;

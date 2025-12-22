@@ -49,7 +49,7 @@ import { useOrbitStore } from "./provider.tsx";
  * }
  * ```
  */
-export function useOrbitObject<T extends Record<string, OrbitValue>>(
+export function useOrbitObject<T extends object>(
   key: string,
   initialValue: T
 ): [T, (updates: Partial<T>) => void] {
@@ -60,15 +60,17 @@ export function useOrbitObject<T extends Record<string, OrbitValue>>(
   useEffect(() => {
     if (map.size === 0) {
       for (const [propKey, propValue] of Object.entries(initialValue)) {
-        map.set(propKey, propValue);
+        map.set(propKey, propValue as OrbitValue);
       }
     }
   }, [map, initialValue]);
 
   const subscribe = useCallback(
     (callback: () => void) => {
-      const observer = () => {
-        callback();
+      const observer = (event: any) => {
+        if (event.keysChanged.size > 0) {
+          callback();
+        }
       };
       map.observe(observer);
       return () => {
@@ -94,11 +96,14 @@ export function useOrbitObject<T extends Record<string, OrbitValue>>(
       const newKeys = Object.keys(newSnapshot);
 
       if (oldKeys.length === newKeys.length) {
+        const oldRecord = snapshotRef.current as Record<string, unknown>;
+        const newRecord = newSnapshot as Record<string, unknown>;
+
         const allKeysMatch = oldKeys.every(
-          (propKey) => snapshotRef.current![propKey] === newSnapshot[propKey]
+          (propKey) => oldRecord[propKey] === newRecord[propKey]
         );
         const allNewKeysExist = newKeys.every(
-          (propKey) => propKey in snapshotRef.current!
+          (propKey) => propKey in oldRecord
         );
 
         if (allKeysMatch && allNewKeysExist) {
@@ -117,7 +122,7 @@ export function useOrbitObject<T extends Record<string, OrbitValue>>(
     (updates: Partial<T>) => {
       for (const [propKey, propValue] of Object.entries(updates)) {
         if (propValue !== undefined) {
-          map.set(propKey, propValue);
+          map.set(propKey, propValue as OrbitValue);
         }
       }
     },

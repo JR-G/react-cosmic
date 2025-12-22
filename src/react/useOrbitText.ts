@@ -61,13 +61,44 @@ export function useOrbitText(
 
   const setOrbitText = useCallback(
     (newText: string) => {
-      const currentText = ytext.toString();
-      if (currentText !== newText) {
-        ytext.delete(0, ytext.length);
-        ytext.insert(0, newText);
+      const oldText = ytext.toString();
+      if (oldText === newText) return;
+
+      let commonPrefix = 0;
+      while (
+        commonPrefix < oldText.length &&
+        commonPrefix < newText.length &&
+        oldText[commonPrefix] === newText[commonPrefix]
+      ) {
+        commonPrefix++;
       }
+
+      let commonSuffix = 0;
+      while (
+        commonSuffix < oldText.length - commonPrefix &&
+        commonSuffix < newText.length - commonPrefix &&
+        oldText[oldText.length - 1 - commonSuffix] ===
+        newText[newText.length - 1 - commonSuffix]
+      ) {
+        commonSuffix++;
+      }
+
+      store.getYDoc().transact(() => {
+        if (commonPrefix + commonSuffix < oldText.length) {
+          ytext.delete(
+            commonPrefix,
+            oldText.length - commonPrefix - commonSuffix
+          );
+        }
+        if (commonPrefix + commonSuffix < newText.length) {
+          ytext.insert(
+            commonPrefix,
+            newText.slice(commonPrefix, newText.length - commonSuffix)
+          );
+        }
+      });
     },
-    [ytext]
+    [ytext, store]
   );
 
   return [text, setOrbitText];

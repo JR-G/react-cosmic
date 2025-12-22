@@ -58,7 +58,7 @@ function ProfileForm() {
 }
 
 function ContactForm() {
-  const [email, setEmail] = useOrbit("email", "");
+  const [email, setEmail] = useOrbit<string>("email", "");
 
   return (
     <div className="form-section">
@@ -98,7 +98,7 @@ function BioForm() {
 }
 
 function StateDebugger() {
-  const [email] = useOrbit("email", "");
+  const [email] = useOrbit<string>("email", "");
   const [bio] = useOrbitText("bio", "");
   const [profile] = useOrbitObject<UserProfile>("profile", {
     firstName: "",

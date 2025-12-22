@@ -83,4 +83,33 @@ export interface OrbitConfig {
    * Defaults to 300ms.
    */
   persistDebounceMs?: number;
+
+  /**
+   * WebSocket server URL for cross-device and multi-user sync.
+   * If provided, enables real-time collaboration via WebSocket provider.
+   * Example: 'ws://localhost:1234' or 'wss://your-server.com'
+   */
+  websocketUrl?: string;
+
+  /**
+   * Optional configuration for WebSocket connection.
+   */
+  websocketOptions?: {
+    /**
+     * Maximum number of reconnection attempts.
+     * Defaults to Infinity (keep trying forever).
+     */
+    maxRetries?: number;
+
+    /**
+     * Delay in milliseconds between reconnection attempts.
+     * Defaults to 3000ms (3 seconds).
+     */
+    retryDelay?: number;
+
+    /**
+     * Custom WebSocket protocols to use.
+     */
+    protocols?: string | string[];
+  };
 }

@@ -1,14 +1,22 @@
 import * as Y from "yjs";
+import { WebsocketProvider } from "y-websocket";
 import type { OrbitConfig, StorageAdapter, OrbitValue } from "./types.ts";
 import { TabSync } from "../sync/tab-sync.ts";
 
 /**
  * Orbit store that manages CRDT state with automatic persistence.
  *
- * Wraps a Yjs CRDT document, providing automatic loading from storage,
- * debounced persistence on updates, and access to CRDT data structures.
+ * Wraps a Yjs CRDT document that handles all conflict resolution automatically.
+ * The CRDT powers tab sync, WebSocket sync across devices, and offline/online
+ * scenarios. Changes merge intelligently without losing data or requiring
+ * manual conflict resolution.
+ *
+ * @remarks
+ * Most users should use OrbitProvider and the hooks instead of working
+ * with OrbitStore directly. This class is exported for advanced use cases.
  *
  * @example
+ * Basic usage with local persistence and tab sync:
  * ```typescript
  * const store = new OrbitStore({
  *   storeId: "my-app",
@@ -19,14 +27,31 @@ import { TabSync } from "../sync/tab-sync.ts";
  * const map = store.getMap("state");
  * map.set("key", "value");
  * ```
+ *
+ * @example
+ * With WebSocket collaboration (CRDT handles multi-user conflicts):
+ * ```typescript
+ * const store = new OrbitStore({
+ *   storeId: "my-app",
+ *   storage: new IndexedDBAdapter(),
+ *   websocketUrl: "ws://localhost:1234"
+ * });
+ *
+ * await store.init();
+ * const provider = store.getWebSocketProvider();
+ * console.log(provider?.wsconnected); // Check connection status
+ * ```
  */
 export class OrbitStore {
   private ydoc: Y.Doc;
   private storage?: StorageAdapter;
   private tabSync?: TabSync;
+  private websocketProvider?: WebsocketProvider;
   private persistDebounceMs: number;
   private persistTimer: ReturnType<typeof setTimeout> | null = null;
   private initialized = false;
+  private websocketFailures = 0;
+  private readonly maxWebsocketFailures = 3;
 
   readonly storeId: string;
 
@@ -38,6 +63,22 @@ export class OrbitStore {
 
     if (config.enableTabSync !== false) {
       this.tabSync = new TabSync(this.storeId, this.ydoc);
+    }
+
+    if (config.websocketUrl !== undefined) {
+      const protocols = config.websocketOptions?.protocols;
+      this.websocketProvider = new WebsocketProvider(
+        config.websocketUrl,
+        this.storeId,
+        this.ydoc,
+        {
+          connect: false,
+          maxBackoffTime: config.websocketOptions?.retryDelay ?? 3000,
+          protocols: protocols === undefined ? undefined : Array.isArray(protocols) ? protocols : [protocols],
+        }
+      );
+
+      this.setupWebSocketErrorHandlers();
     }
 
     if (this.storage !== undefined) {
@@ -65,6 +106,10 @@ export class OrbitStore {
 
     if (this.tabSync !== undefined) {
       this.tabSync.init();
+    }
+
+    if (this.websocketProvider !== undefined) {
+      this.websocketProvider.connect();
     }
 
     this.initialized = true;
@@ -115,6 +160,80 @@ export class OrbitStore {
   }
 
   /**
+   * Gets the WebSocket provider if configured.
+   *
+   * Used for accessing the awareness API for presence features
+   * or checking connection status. Returns undefined if WebSocket
+   * sync is not enabled.
+   *
+   * @returns The WebSocket provider instance or undefined
+   *
+   * @example
+   * ```typescript
+   * const provider = store.getWebSocketProvider();
+   * if (provider?.awareness) {
+   *   provider.awareness.setLocalStateField('user', {
+   *     name: 'Alice',
+   *     color: '#ff0000'
+   *   });
+   * }
+   * ```
+   */
+  getWebSocketProvider(): WebsocketProvider | undefined {
+    return this.websocketProvider;
+  }
+
+  private statusListeners = new Set<(status: string) => void>();
+
+  /**
+   * Subscribes to connection status changes.
+   *
+   * @param listener - Callback function invoked when connection status changes
+   * @remarks Most users should use the useOrbitStatus hook instead
+   */
+  onStatusChange(listener: (status: string) => void): void {
+    this.statusListeners.add(listener);
+  }
+
+  /**
+   * Unsubscribes from connection status changes.
+   *
+   * @param listener - The listener to remove
+   */
+  offStatusChange(listener: (status: string) => void): void {
+    this.statusListeners.delete(listener);
+  }
+
+  /**
+   * Configures WebSocket error handlers to gracefully handle connection failures.
+   *
+   * Limits retry attempts when the server is unavailable. After maximum failures,
+   * stops attempting reconnection to avoid console spam. The app continues to work
+   * with local persistence and tab sync.
+   */
+  private setupWebSocketErrorHandlers(): void {
+    if (this.websocketProvider === undefined) {
+      return;
+    }
+
+    this.websocketProvider.on("status", (event: { status: string }) => {
+      if (event.status === "connected") {
+        this.websocketFailures = 0;
+      }
+      this.statusListeners.forEach((l) => l(event.status));
+    });
+
+    this.websocketProvider.on("connection-error", () => {
+      this.websocketFailures++;
+      if (this.websocketFailures >= this.maxWebsocketFailures && this.websocketProvider) {
+        this.websocketProvider.shouldConnect = false;
+        this.websocketProvider.disconnect();
+        this.statusListeners.forEach((l) => l("disconnected"));
+      }
+    });
+  }
+
+  /**
    * Handles updates by scheduling a debounced persist operation.
    */
   private handleUpdate(): void {
@@ -157,6 +276,11 @@ export class OrbitStore {
 
     if (this.tabSync !== undefined) {
       this.tabSync.dispose();
+    }
+
+    if (this.websocketProvider !== undefined) {
+      this.websocketProvider.disconnect();
+      this.websocketProvider.destroy();
     }
 
     this.ydoc.destroy();
