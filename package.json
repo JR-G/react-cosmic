@@ -23,7 +23,8 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
-    "docs": "typedoc src/index.ts"
+    "docs": "typedoc src/index.ts",
+    "demo": "bun --hot examples/basic-form/index.html"
   },
   "keywords": [
     "react",
