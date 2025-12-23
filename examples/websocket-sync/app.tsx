@@ -282,7 +282,7 @@ function OrbitApp() {
           <div className="header-badge">
             <StatusBadge />
           </div>
-          <h1>React Orbit - WebSocket Sync Demo</h1>
+          <h1>React Cosmic - WebSocket Sync Demo</h1>
           <p className="subtitle">
             Real-time collaboration powered by CRDTs and WebSockets.
             Open this in multiple browser windows to see changes sync instantly.

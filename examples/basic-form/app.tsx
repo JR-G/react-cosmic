@@ -119,7 +119,7 @@ function App() {
     <OrbitProvider storeId="basic-form-example">
       <div className="container">
         <header>
-          <h1>React Orbit - Basic Form Example</h1>
+          <h1>React Cosmic - Basic Form Example</h1>
           <p className="subtitle">
             Your form data is automatically saved and synced across tabs. Try
             opening this page in multiple tabs and editing the form.

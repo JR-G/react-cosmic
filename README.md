@@ -1,4 +1,4 @@
-# React Orbit
+# React Cosmic
 
 State that persists. Across tabs. Across crashes. No server required.
 
@@ -8,12 +8,12 @@ Built on CRDTs so your users can't lose their work, even when they try.
 
 You know how form data disappears when you refresh the page? Or how opening the same app in two tabs creates a mess? This fixes that.
 
-React Orbit wraps [Yjs](https://yjs.dev/) and gives you hooks that work like [`useState`](https://react.dev/reference/react/useState) but actually remember things. Your state syncs across browser tabs automatically and persists to [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) without you doing anything.
+React Cosmic wraps [Yjs](https://yjs.dev/) and gives you hooks that work like [`useState`](https://react.dev/reference/react/useState) but actually remember things. Your state syncs across browser tabs automatically and persists to [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) without you doing anything.
 
 ## Install
 
 ```bash
-bun add react-orbit  # or npm/pnpm/yarn
+bun add react-cosmic  # or npm/pnpm/yarn
 ```
 
 ## Quick start
@@ -21,7 +21,7 @@ bun add react-orbit  # or npm/pnpm/yarn
 Wrap your app:
 
 ```tsx
-import { OrbitProvider } from 'react-orbit';
+import { OrbitProvider } from 'react-cosmic';
 
 function App() {
   return (
@@ -42,7 +42,7 @@ import {
   useOrbitStatus,
   useOrbitAwareness,
   useSetLocalAwareness
-} from 'react-orbit';
+} from 'react-cosmic';
 
 function Form() {
   const [email, setEmail] = useOrbit('email', '');
@@ -191,7 +191,7 @@ Only works when `websocketUrl` is configured.
 **Basic form demo** (local persistence and tab sync):
 ```bash
 git clone <this-repo>
-cd react-orbit
+cd react-cosmic
 bun install
 bun run demo
 ```
