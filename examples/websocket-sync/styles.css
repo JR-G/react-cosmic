@@ -3,13 +3,25 @@
 }
 
 @keyframes twinkle {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
+
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 1;
+  }
 }
 
 @keyframes drift {
-  0% { transform: translate(0, 0); }
-  100% { transform: translate(-100px, 100px); }
+  0% {
+    transform: translate(0, 0);
+  }
+
+  100% {
+    transform: translate(-100px, 100px);
+  }
 }
 
 body {
@@ -46,7 +58,7 @@ body::before {
   z-index: 0;
 }
 
-body > * {
+body>* {
   position: relative;
   z-index: 1;
 }
@@ -170,4 +182,182 @@ main {
   color: #cbd5e1;
   overflow-x: auto;
   line-height: 1.6;
+}
+
+/* Presence Styles */
+.presence-list {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1000;
+}
+
+.presence-item {
+  background: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(10px);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.presence-item.is-me {
+  border: 2px solid #8B5CF6;
+}
+
+.presence-item.not-me {
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.presence-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  box-shadow: 0 0 4px #4ade80;
+}
+
+.presence-name {
+  font-weight: 600;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Status Badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.4);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-badge .status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.status-badge.connected {
+  border: 1px solid #4ade80;
+  color: #4ade80;
+}
+
+.status-badge.connected .status-dot {
+  background: #4ade80;
+}
+
+.status-badge.connecting {
+  border: 1px solid #fbbf24;
+  color: #fbbf24;
+}
+
+/* Shared Notes & Textarea */
+.textarea-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.shared-textarea {
+  font-family: monospace;
+  position: relative;
+  z-index: 1;
+}
+
+.notes-subtitle {
+  font-size: 14px;
+  color: #94a3b8;
+  margin-bottom: 16px;
+}
+
+/* Remote Cursor */
+.remote-cursor {
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.cursor-line {
+  width: 2px;
+  height: 1.2em;
+}
+
+.cursor-label {
+  color: white;
+  font-size: 10px;
+  padding: 2px 4px;
+  border-radius: 2px;
+  white-space: nowrap;
+  font-weight: bold;
+  margin-top: -2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* App Layout */
+.header-badge {
+  margin-bottom: 16px;
+}
+
+.status-badge.connecting .status-dot {
+  background: #fbbf24;
+}
+
+.status-badge.disconnected {
+  border: 1px solid #f87171;
+  color: #f87171;
+}
+
+.status-badge.disconnected .status-dot {
+  background: #f87171;
+}
+
+/* Loading Screen */
+.loading-screen {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.loading-content {
+  text-align: center;
+}
+
+.loading-logo {
+  width: 40px;
+  height: 40px;
+  background: #8b5cf6;
+  border-radius: 50%;
+  margin: 0 auto 20px;
 }

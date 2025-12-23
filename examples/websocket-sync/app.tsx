@@ -62,53 +62,22 @@ function PresenceIndicator() {
   }
 
   return (
-    <div style={{
-      position: "fixed",
-      top: "20px",
-      right: "20px",
-      display: "flex",
-      flexDirection: "column",
-      gap: "8px",
-      zIndex: 1000
-    }}>
+    <div className="presence-list">
       {Array.from(users.entries()).map(([clientId, state]) => {
         if (!state.user) return null;
         const isMe = clientId === myClientId;
         return (
-          <div key={clientId} style={{
-            background: "rgba(30, 41, 59, 0.95)",
-            backdropFilter: "blur(10px)",
-            color: "white",
-            padding: "10px 16px",
-            borderRadius: "8px",
-            fontSize: "13px",
-            fontWeight: "500",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-            border: isMe ? "2px solid #8B5CF6" : "1px solid rgba(139, 92, 246, 0.3)"
-          }}>
-            <div style={{
-              width: "8px",
-              height: "8px",
-              borderRadius: "50%",
-              background: "#4ade80",
-              animation: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-              boxShadow: "0 0 4px #4ade80"
-            }} />
-            <span style={{ color: state.user.color, fontWeight: "600" }}>
+          <div
+            key={clientId}
+            className={`presence-item ${isMe ? "is-me" : "not-me"}`}
+          >
+            <div className="presence-dot" />
+            <span className="presence-name" style={{ color: state.user.color }}>
               {state.user.name}{isMe ? " (You)" : ""}
             </span>
           </div>
         );
       })}
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
-      `}</style>
     </div>
   );
 }
@@ -162,10 +131,10 @@ function CollaborativeTextArea() {
   return (
     <div className="form-section">
       <h2>Shared Notes</h2>
-      <p style={{ fontSize: "14px", color: "#94a3b8", marginBottom: "16px" }}>
+      <p className="notes-subtitle">
         Type together! You'll see others' cursors in real-time.
       </p>
-      <div className="form-field" style={{ position: "relative", overflow: "hidden" }}>
+      <div className="form-field textarea-wrapper">
         <textarea
           ref={textareaRef}
           value={notes}
@@ -183,11 +152,7 @@ function CollaborativeTextArea() {
           }}
           rows={8}
           placeholder="Start typing... others will see your cursor!"
-          style={{
-            fontFamily: "monospace",
-            position: "relative",
-            zIndex: 1
-          }}
+          className="shared-textarea"
         />
         {textareaRef.current && remoteCursors.map(cursor => {
           const textarea = textareaRef.current;
@@ -219,7 +184,7 @@ function RemoteCursor({ cursor, textarea }: { cursor: Cursor, textarea: HTMLText
       div.style.position = "absolute";
       div.style.visibility = "hidden";
       div.style.whiteSpace = "pre-wrap";
-      div.style.wordWrap = "break-word";
+      div.style.overflowWrap = "break-word";
 
       const content = textarea.value.slice(0, cursor.index);
       div.textContent = content;
@@ -253,33 +218,12 @@ function RemoteCursor({ cursor, textarea }: { cursor: Cursor, textarea: HTMLText
   if (cursor.index > textarea.value.length) return null;
 
   return (
-    <div style={{
-      position: "absolute",
-      top: coords.top,
-      left: coords.left,
-      pointerEvents: "none",
-      zIndex: 2,
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "flex-start"
-    }}>
-      <div style={{
-        width: "2px",
-        height: "1.2em",
-        background: cursor.color,
-        boxShadow: `0 0 4px ${cursor.color}`
-      }} />
-      <div style={{
-        background: cursor.color,
-        color: "white",
-        fontSize: "10px",
-        padding: "2px 4px",
-        borderRadius: "2px",
-        whiteSpace: "nowrap",
-        fontWeight: "bold",
-        marginTop: "-2px",
-        boxShadow: "0 2px 4px rgba(0,0,0,0.3)"
-      }}>
+    <div className="remote-cursor" style={{ top: coords.top, left: coords.left }}>
+      <div
+        className="cursor-line"
+        style={{ background: cursor.color, boxShadow: `0 0 4px ${cursor.color}` }}
+      />
+      <div className="cursor-label" style={{ background: cursor.color }}>
         {cursor.name}
       </div>
     </div>
@@ -303,33 +247,10 @@ function StateDebugger() {
 
 function StatusBadge() {
   const status = useOrbitStatus();
-  const colors: Record<string, string> = {
-    connected: "#4ade80",
-    connecting: "#fbbf24",
-    disconnected: "#f87171"
-  };
 
   return (
-    <div style={{
-      display: "inline-flex",
-      alignItems: "center",
-      gap: "6px",
-      padding: "4px 10px",
-      borderRadius: "20px",
-      background: "rgba(15, 23, 42, 0.4)",
-      border: `1px solid ${colors[status] || "#94a3b8"}`,
-      fontSize: "11px",
-      fontWeight: "600",
-      textTransform: "uppercase",
-      letterSpacing: "0.05em",
-      color: colors[status] || "#94a3b8"
-    }}>
-      <div style={{
-        width: "6px",
-        height: "6px",
-        borderRadius: "50%",
-        background: colors[status] || "#94a3b8"
-      }} />
+    <div className={`status-badge ${status}`}>
+      <div className="status-dot" />
       {status}
     </div>
   );
@@ -337,24 +258,9 @@ function StatusBadge() {
 
 function LoadingScreen() {
   return (
-    <div style={{
-      height: "100vh",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)",
-      color: "white",
-      fontSize: "18px",
-      fontWeight: "500"
-    }}>
-      <div style={{ textAlign: "center" }}>
-        <div className="pulse" style={{
-          width: "40px",
-          height: "40px",
-          background: "#8b5cf6",
-          borderRadius: "50%",
-          margin: "0 auto 20px"
-        }} />
+    <div className="loading-screen">
+      <div className="loading-content">
+        <div className="loading-logo pulse" />
         Initializing Orbit...
       </div>
     </div>
@@ -373,7 +279,7 @@ function OrbitApp() {
       <PresenceIndicator />
       <div className="container">
         <header>
-          <div style={{ marginBottom: "16px" }}>
+          <div className="header-badge">
             <StatusBadge />
           </div>
           <h1>React Orbit - WebSocket Sync Demo</h1>
