@@ -190,7 +190,7 @@ Only works when `websocketUrl` is configured.
 
 **Basic form demo** (local persistence and tab sync):
 ```bash
-git clone <this-repo>
+git clone https://github.com/JR-G/react-cosmic
 cd react-cosmic
 bun install
 bun run demo
