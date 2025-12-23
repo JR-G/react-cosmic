@@ -96,8 +96,15 @@ export interface OrbitConfig {
    */
   websocketOptions?: {
     /**
-     * Maximum number of reconnection attempts.
-     * Defaults to Infinity (keep trying forever).
+     * Maximum number of consecutive connection failures before stopping reconnection.
+     * This acts as a circuit breaker to prevent excessive reconnection attempts
+     * when a server is down. Defaults to 3.
+     */
+    maxFailures?: number;
+
+    /**
+     * Maximum number of reconnection attempts for the underlying provider.
+     * Defaults to Infinity.
      */
     maxRetries?: number;
 

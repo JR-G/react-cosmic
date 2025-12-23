@@ -24,23 +24,32 @@ import { TabSync } from "../sync/tab-sync.ts";
  * });
  *
  * await store.init();
- * const map = store.getMap("state");
+ *
+ * const map = store.getMap("orbit-state");
  * map.set("key", "value");
  * ```
  *
  * @example
- * With WebSocket collaboration (CRDT handles multi-user conflicts):
+ * With WebSocket collaboration and custom circuit breaker:
  * ```typescript
  * const store = new OrbitStore({
  *   storeId: "my-app",
  *   storage: new IndexedDBAdapter(),
- *   websocketUrl: "ws://localhost:1234"
+ *   websocketUrl: "ws://localhost:1234",
+ *   websocketOptions: {
+ *     maxFailures: 5 // Allow 5 failures before stopping
+ *   }
  * });
  *
  * await store.init();
  * const provider = store.getWebSocketProvider();
- * console.log(provider?.wsconnected); // Check connection status
  * ```
+ *
+ * @remarks
+ * The store includes a "Circuit Breaker" for WebSockets. If the connection fails
+ * consecutively more than `maxFailures` times, it will stop attempting to
+ * reconnect to save resources. The app will continue to work offline with
+ * local and tab-based synchronization.
  */
 export class OrbitStore {
   private ydoc: Y.Doc;
@@ -51,7 +60,7 @@ export class OrbitStore {
   private persistTimer: ReturnType<typeof setTimeout> | null = null;
   private initialized = false;
   private websocketFailures = 0;
-  private readonly maxWebsocketFailures = 3;
+  private readonly maxWebsocketFailures: number;
 
   readonly storeId: string;
 
@@ -59,6 +68,7 @@ export class OrbitStore {
     this.storeId = config.storeId;
     this.storage = config.storage;
     this.persistDebounceMs = config.persistDebounceMs ?? 300;
+    this.maxWebsocketFailures = config.websocketOptions?.maxFailures ?? 3;
     this.ydoc = new Y.Doc();
 
     if (config.enableTabSync !== false) {
