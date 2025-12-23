@@ -1,6 +1,6 @@
 {
   "name": "react-cosmic",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CRDT-based offline-first React state management",
   "type": "module",
   "main": "./dist/index.js",
