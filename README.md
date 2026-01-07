@@ -1,5 +1,7 @@
 # React Cosmic
 
+<img width="470" height="600" alt="react-cosmic" src="https://github.com/user-attachments/assets/d958c7ac-2e8a-4641-aaf5-87e006d80515" />
+
 State that persists. Across tabs. Across crashes. No server required.
 
 Built on CRDTs so your users can't lose their work, even when they try.
