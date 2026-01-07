@@ -1,6 +1,6 @@
 {
   "name": "react-cosmic",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "CRDT-based offline-first React state management",
   "type": "module",
   "main": "./dist/index.js",
@@ -16,7 +16,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "bun build src/index.ts --outdir dist --target browser --format esm",
+    "build": "rm -rf dist && bun build src/index.ts --outdir dist --target browser --format esm && tsc -p tsconfig.build.json",
     "test": "vitest",
     "test:file": "vitest run",
     "test:ui": "vitest --ui",
@@ -37,7 +37,7 @@
     "collaboration",
     "sync"
   ],
-  "author": "",
+  "author": "James Glenn",
   "license": "MIT",
   "peerDependencies": {
     "react": "^18.0.0"
