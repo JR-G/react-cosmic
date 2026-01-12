@@ -1,4 +1,4 @@
-export { OrbitProvider } from "./react/provider.tsx";
+export { OrbitProvider, useOrbitStore } from "./react/provider.tsx";
 export type { OrbitProviderProps } from "./react/provider.tsx";
 
 export { useOrbit } from "./react/useOrbit.ts";

@@ -7,11 +7,12 @@ import {
   useOrbitStatus,
   useOrbitAwareness,
   useSetLocalAwareness,
-} from "../../src/index.ts";
-import { useOrbitStore } from "../../src/react/provider.tsx";
+  useOrbitStore,
+} from "react-cosmic";
 import "./styles.css";
 
-const WEBSOCKET_URL = "ws://localhost:1234";
+const PARTYKIT_HOST = import.meta.env.VITE_PARTYKIT_HOST || "localhost:1999";
+const WEBSOCKET_URL = `${PARTYKIT_HOST.startsWith('localhost') ? 'ws' : 'wss'}://${PARTYKIT_HOST}/party/react-cosmic-collab`;
 
 const COSMIC_NAMES = [
   "Nebula", "Quasar", "Pulsar", "Supernova", "Stardust", "Comet", "Meteor",
