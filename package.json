@@ -1,6 +1,6 @@
 {
   "name": "react-cosmic",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "CRDT-based offline-first React state management",
   "type": "module",
   "main": "./dist/index.js",
@@ -16,7 +16,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf dist && bun build src/index.ts --outdir dist --target browser --format esm && tsc -p tsconfig.build.json",
+    "build": "rm -rf dist && bun build src/index.ts --outdir dist --target browser --format esm --external react --external yjs --external y-websocket && tsc -p tsconfig.build.json",
     "test": "vitest",
     "test:file": "vitest run",
     "test:ui": "vitest --ui",

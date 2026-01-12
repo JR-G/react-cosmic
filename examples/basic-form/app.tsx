@@ -4,7 +4,7 @@ import {
   useOrbit,
   useOrbitText,
   useOrbitObject,
-} from "../../src/index.ts";
+} from "react-cosmic";
 import "./styles.css";
 
 interface UserProfile {
