@@ -3,20 +3,20 @@
   "version": "1.0.2",
   "description": "CRDT-based offline-first React state management",
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
     }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "rm -rf dist && bun build src/index.ts --outdir dist --target browser --format esm --external react --external yjs --external y-websocket && tsc -p tsconfig.build.json",
+    "build": "tsdown src/index.ts --format esm --dts --external react --external yjs --external y-websocket",
     "test": "vitest",
     "test:file": "vitest run",
     "test:ui": "vitest --ui",
@@ -69,6 +69,7 @@
     "happy-dom": "^15.11.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "tsdown": "^0.20.0-beta.1",
     "typedoc": "^0.27.6",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
