@@ -39,6 +39,11 @@
   ],
   "author": "James Glenn",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JR-G/react-cosmic.git"
+  },
+  "homepage": "https://github.com/JR-G/react-cosmic#readme",
   "peerDependencies": {
     "react": "^18.0.0"
   },
