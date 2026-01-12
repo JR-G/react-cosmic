@@ -6,7 +6,7 @@ export default class YjsServer implements Party.Server {
 
   onConnect(conn: Party.Connection) {
     return onConnect(conn, this.party, {
-      persist: true,
+      persist: { mode: "snapshot" },
     });
   }
 }
