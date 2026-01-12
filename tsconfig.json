@@ -19,5 +19,6 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": false
-  }
+  },
+  "exclude": ["examples", "node_modules", "dist"]
 }
