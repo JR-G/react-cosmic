@@ -10,6 +10,8 @@ State that persists. Across tabs. Across crashes. No server required.
 
 Built on CRDTs so your users can't lose their work, even when they try.
 
+**[Try the live demo →](https://react-cosmic.vercel.app)**
+
 ## What is this?
 
 You know how form data disappears when you refresh the page? Or how opening the same app in two tabs creates a mess? This fixes that.
