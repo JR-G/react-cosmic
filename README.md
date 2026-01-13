@@ -10,7 +10,8 @@ State that persists. Across tabs. Across crashes. No server required.
 
 Built on CRDTs so your users can't lose their work, even when they try.
 
-**[Try the live demo →](https://react-cosmic.vercel.app)**
+**[Live demo](https://react-cosmic.vercel.app)** - See tab sync and persistence in action
+**[Collaboration demo](https://react-cosmic-collab.vercel.app)** - Open in multiple windows to see real-time multiplayer
 
 ## What is this?
 
@@ -194,7 +195,7 @@ function MyComponent() {
 
 Only works when `websocketUrl` is configured.
 
-## Try the demos
+## Run locally
 
 **Basic form demo** (local persistence and tab sync):
 ```bash
@@ -265,7 +266,7 @@ Then connect your app:
 
 Now users on different devices see each other's changes in real-time. The CRDT handles all conflict resolution automatically - whether it's two tabs, two users, or twenty.
 
-For production, you'll want auth, persistence, and proper scaling. Check out `y-websocket` docs or hosted Yjs providers.
+For production, you'll want auth, persistence, and proper scaling. Check out `y-websocket` docs, [PartyKit](https://partykit.io), or other hosted Yjs providers.
 
 ## License
 
