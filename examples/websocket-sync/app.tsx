@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, createContext, useContext } from "react";
 import {
   OrbitProvider,
   useOrbit,
@@ -9,10 +9,14 @@ import {
   useSetLocalAwareness,
   useOrbitStore,
 } from "react-cosmic";
+import YPartyKitProvider from "y-partykit/provider";
 import "./styles.css";
 
 const PARTYKIT_HOST = import.meta.env.VITE_PARTYKIT_HOST || "localhost:1999";
-const WEBSOCKET_URL = `${PARTYKIT_HOST.startsWith('localhost') ? 'ws' : 'wss'}://${PARTYKIT_HOST}/party/react-cosmic-collab`;
+const PARTYKIT_ROOM = "react-cosmic-collab";
+
+const PartyKitContext = createContext<any>(null);
+const usePartyKit = () => useContext(PartyKitContext);
 
 const COSMIC_NAMES = [
   "Nebula", "Quasar", "Pulsar", "Supernova", "Stardust", "Comet", "Meteor",
@@ -33,8 +37,8 @@ interface UserPresence {
 }
 
 function PresenceIndicator() {
-  const users = useOrbitAwareness<{ user: UserPresence }>();
-  const store = useOrbitStore();
+  const provider = usePartyKit();
+  const [users, setUsers] = useState<Map<number, { user: UserPresence }>>(new Map());
 
   const deviceId = useMemo(() => {
     let id = localStorage.getItem("orbit-device-id");
@@ -52,11 +56,25 @@ function PresenceIndicator() {
 
   const [myProfile] = useOrbit<UserPresence>(`user-profile-${deviceId}`, initialProfile);
 
-  useSetLocalAwareness("user", myProfile);
+  useEffect(() => {
+    if (!provider?.awareness) return;
 
-  const myClientId = useMemo(() => {
-    return store.getWebSocketProvider()?.awareness?.clientID ?? null;
-  }, [store]);
+    provider.awareness.setLocalState({ user: myProfile });
+
+    const updateUsers = () => {
+      const states = provider.awareness.getStates();
+      setUsers(new Map(states));
+    };
+
+    provider.awareness.on('change', updateUsers);
+    updateUsers();
+
+    return () => {
+      provider.awareness.off('change', updateUsers);
+    };
+  }, [provider, myProfile]);
+
+  const myClientId = provider?.awareness?.clientID;
 
   if (users.size === 0) {
     return null;
@@ -92,13 +110,12 @@ interface Cursor {
 
 function CollaborativeTextArea() {
   const [notes, setNotes] = useOrbitText("shared-notes", "");
-  const store = useOrbitStore();
+  const provider = usePartyKit();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [remoteCursors, setRemoteCursors] = useState<Cursor[]>([]);
 
   useEffect(() => {
-    const provider = store.getWebSocketProvider();
-    if (!provider || !provider.awareness) return;
+    if (!provider?.awareness) return;
 
     const handleUpdate = () => {
       const states = provider.awareness.getStates();
@@ -120,13 +137,16 @@ function CollaborativeTextArea() {
 
     provider.awareness.on("change", handleUpdate);
     return () => provider.awareness.off("change", handleUpdate);
-  }, [store]);
+  }, [provider]);
 
   const updateCursor = () => {
-    const provider = store.getWebSocketProvider();
-    if (!provider || !provider.awareness || !textareaRef.current) return;
+    if (!provider?.awareness || !textareaRef.current) return;
 
-    provider.awareness.setLocalStateField("cursor", textareaRef.current.selectionStart);
+    const currentState = provider.awareness.getLocalState();
+    provider.awareness.setLocalState({
+      ...currentState,
+      cursor: textareaRef.current.selectionStart
+    });
   };
 
   return (
@@ -146,9 +166,12 @@ function CollaborativeTextArea() {
           onSelect={updateCursor}
           onKeyUp={updateCursor}
           onBlur={() => {
-            const provider = store.getWebSocketProvider();
             if (provider?.awareness) {
-              provider.awareness.setLocalStateField("cursor", undefined);
+              const currentState = provider.awareness.getLocalState();
+              provider.awareness.setLocalState({
+                ...currentState,
+                cursor: undefined
+              });
             }
           }}
           rows={8}
@@ -270,18 +293,49 @@ function LoadingScreen() {
 
 function OrbitApp() {
   const store = useOrbitStore();
+  const [partyKitProvider, setPartyKitProvider] = useState<any>(null);
+  const [connectionStatus, setConnectionStatus] = useState<string>('connecting');
+
+  useEffect(() => {
+    if (!store) return;
+
+    const ydoc = (store as any).ydoc;
+    const provider = new YPartyKitProvider(
+      PARTYKIT_HOST,
+      PARTYKIT_ROOM,
+      ydoc
+    );
+
+    const updateStatus = () => {
+      setConnectionStatus(provider.ws?.readyState === 1 ? 'connected' : 'connecting');
+    };
+
+    provider.on('status', updateStatus);
+    provider.on('sync', updateStatus);
+
+    setPartyKitProvider(provider);
+
+    return () => {
+      provider.off('status', updateStatus);
+      provider.off('sync', updateStatus);
+      provider.destroy();
+    };
+  }, [store]);
 
   if (!store) {
     return <LoadingScreen />;
   }
 
   return (
-    <>
+    <PartyKitContext.Provider value={partyKitProvider}>
       <PresenceIndicator />
       <div className="container">
         <header>
           <div className="header-badge">
-            <StatusBadge />
+            <div className={`status-badge ${connectionStatus}`}>
+              <div className="status-dot" />
+              {connectionStatus}
+            </div>
           </div>
           <h1>React Cosmic - WebSocket Sync Demo</h1>
           <p className="subtitle">
@@ -295,16 +349,13 @@ function OrbitApp() {
           <StateDebugger />
         </main>
       </div>
-    </>
+    </PartyKitContext.Provider>
   );
 }
 
 function App() {
   return (
-    <OrbitProvider
-      storeId="websocket-sync-example"
-      websocketUrl={WEBSOCKET_URL}
-    >
+    <OrbitProvider storeId="websocket-sync-example">
       <OrbitApp />
     </OrbitProvider>
   );

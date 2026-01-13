@@ -1,0 +1,11 @@
+{
+  "name": "react-cosmic-websocket-server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "y-websocket": "^2.0.5"
+  }
+}
