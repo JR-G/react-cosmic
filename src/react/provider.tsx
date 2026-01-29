@@ -124,9 +124,14 @@ export function OrbitProvider({
 
     const newStore = new OrbitStore(config);
 
-    newStore.init().then(() => {
-      setStore(newStore);
-    });
+    newStore.init()
+      .then(() => {
+        setStore(newStore);
+      })
+      .catch((error) => {
+        console.error("[react-cosmic] Failed to initialise store:", error);
+        setStore(newStore);
+      });
 
     return () => {
       newStore.dispose();
