@@ -35,7 +35,7 @@ import { useOrbitStore } from "../provider.tsx";
  * Only works when websocketUrl is configured in OrbitProvider.
  * Does nothing if WebSockets are not enabled.
  */
-export function useSetLocalAwareness<T>(field: string, state: T | undefined): void {
+export function useSetLocalAwareness<T extends Record<string, unknown>>(state: T | undefined): void {
   const store = useOrbitStore();
 
   useEffect(() => {
@@ -44,10 +44,10 @@ export function useSetLocalAwareness<T>(field: string, state: T | undefined): vo
       return;
     }
 
-    provider.awareness.setLocalStateField(field, state);
+    provider.awareness.setLocalState(state ?? null);
 
     return () => {
-      provider.awareness.setLocalStateField(field, null);
+      provider.awareness.setLocalState(null);
     };
-  }, [store, field, state]);
+  }, [store, state]);
 }
