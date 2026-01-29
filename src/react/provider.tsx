@@ -2,6 +2,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useState,
   type ReactNode,
 } from "react";
@@ -108,14 +109,22 @@ export function OrbitProvider({
   websocketOptions,
 }: OrbitProviderProps): ReactNode {
   const [store, setStore] = useState<OrbitStore | null>(null);
+  const websocketOptionsKey = useMemo(
+    () => JSON.stringify(websocketOptions ?? null),
+    [websocketOptions]
+  );
 
   useEffect(() => {
+    const parsedWebsocketOptions = websocketOptionsKey !== "null"
+      ? JSON.parse(websocketOptionsKey)
+      : undefined;
+
     const config: OrbitConfig = {
       storeId,
       enableTabSync,
       persistDebounceMs,
       websocketUrl,
-      websocketOptions,
+      websocketOptions: parsedWebsocketOptions,
     };
 
     if (enableStorage) {
@@ -136,7 +145,7 @@ export function OrbitProvider({
     return () => {
       newStore.dispose();
     };
-  }, [storeId, enableStorage, enableTabSync, persistDebounceMs, websocketUrl, websocketOptions]);
+  }, [storeId, enableStorage, enableTabSync, persistDebounceMs, websocketUrl, websocketOptionsKey]);
 
   if (store === null) {
     return null;
