@@ -5,6 +5,7 @@ export { useOrbit } from "./react/useOrbit.ts";
 export { useOrbitText } from "./react/useOrbitText.ts";
 export { useOrbitObject } from "./react/useOrbitObject.ts";
 export { useOrbitStatus } from "./react/collaboration/useOrbitStatus.ts";
+export type { ConnectionStatus } from "./react/collaboration/useOrbitStatus.ts";
 export { useOrbitAwareness } from "./react/collaboration/useOrbitAwareness.ts";
 export { useSetLocalAwareness } from "./react/collaboration/useSetLocalAwareness.ts";
 

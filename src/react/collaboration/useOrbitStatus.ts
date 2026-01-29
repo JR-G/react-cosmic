@@ -7,7 +7,7 @@ import { useOrbitStore } from "../provider.tsx";
  * Returns the real-time connection state of the WebSocket provider.
  * Useful for showing connection indicators in collaborative applications.
  *
- * @returns Current status: 'connecting', 'connected', or 'disconnected'
+ * @returns Current connection status
  *
  * @example
  * ```typescript
@@ -31,7 +31,9 @@ import { useOrbitStore } from "../provider.tsx";
  * Only works when websocketUrl is configured in OrbitProvider.
  * Returns 'disconnected' if WebSockets are not enabled.
  */
-export function useOrbitStatus(): string {
+export type ConnectionStatus = 'connected' | 'connecting' | 'disconnected';
+
+export function useOrbitStatus(): ConnectionStatus {
     const store = useOrbitStore();
 
     const subscribe = useCallback(
