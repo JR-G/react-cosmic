@@ -6,18 +6,26 @@
 
 <img width="470" height="600" alt="react-cosmic" src="https://github.com/user-attachments/assets/d958c7ac-2e8a-4641-aaf5-87e006d80515" />
 
-State that persists. Across tabs. Across crashes. No server required.
+React state that persists across refreshes, syncs across tabs, and survives crashes. No server required.
 
-Built on CRDTs so your users can't lose their work, even when they try.
+```tsx
+const [draft, setDraft] = useOrbit('email-draft', '');
+// That's it. Survives refresh. Syncs across tabs. Zero config.
+```
 
-**[Live demo](https://react-cosmic.vercel.app)** - See tab sync and persistence in action
-**[Collaboration demo](https://react-cosmic-collab.vercel.app)** - Open in multiple windows to see real-time multiplayer
+**[Live demo](https://react-cosmic.vercel.app)** — tab sync and persistence in action
+**[Collaboration demo](https://react-cosmic-collab.vercel.app)** — real-time multiplayer (open multiple windows)
 
-## What is this?
+## The problem
 
-You know how form data disappears when you refresh the page? Or how opening the same app in two tabs creates a mess? This fixes that.
+- User refreshes the page mid-form → data gone
+- User opens two tabs → state conflicts and overwrites
+- User's browser crashes → draft email lost
+- You want multiplayer → now you're building conflict resolution
 
-React Cosmic wraps [Yjs](https://yjs.dev/) and gives you hooks that work like [`useState`](https://react.dev/reference/react/useState) but actually remember things. Your state syncs across browser tabs automatically and persists to [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) without you doing anything.
+## The solution
+
+React Cosmic gives you hooks that work like `useState` but persist to IndexedDB and sync across tabs automatically. Built on [Yjs](https://yjs.dev/) CRDTs, so conflicts resolve themselves — even with real-time collaboration.
 
 ## Install
 
@@ -223,18 +231,28 @@ Open multiple browsers to see real-time collaboration with presence indicators a
 
 ## When to use this
 
-Good for:
 - Forms that shouldn't lose data
 - Draft content (emails, posts, documents)
-- User preferences
-- Any UI state you want to survive refreshes
-- Multi-tab scenarios
+- User preferences that persist
+- Any state you want to survive refreshes
+- Multi-tab applications
 - Real-time collaboration (with WebSocket server)
-- Cross-device state sync
+- Cross-device sync
 
 Not for:
 - Replacing your backend (it's a sync layer, not a database)
 - Massive datasets (it's in-browser storage)
+
+## Why not just use...
+
+**localStorage / zustand persist / jotai storage?**
+They don't handle cross-tab sync properly. Open two tabs, edit in both, and one overwrites the other. React Cosmic uses CRDTs — edits merge automatically, no data loss.
+
+**Plain Yjs?**
+You can, but you'll write a lot of boilerplate. React Cosmic gives you `useState`-like hooks with persistence and sync built in.
+
+**A backend?**
+Sometimes you don't need one. Drafts, preferences, and form state can live entirely in the browser. When you do need sync, just add a WebSocket URL — same API, now multiplayer.
 
 ## Server sync (CRDT-powered collaboration)
 

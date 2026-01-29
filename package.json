@@ -1,7 +1,7 @@
 {
   "name": "react-cosmic",
   "version": "1.0.4",
-  "description": "CRDT-based offline-first React state management",
+  "description": "React state that persists across refreshes, syncs across tabs, and survives crashes",
   "type": "module",
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
@@ -30,12 +30,21 @@
   },
   "keywords": [
     "react",
-    "crdt",
-    "offline-first",
     "state-management",
+    "persist",
+    "persistence",
+    "localstorage",
+    "indexeddb",
+    "offline-first",
+    "cross-tab",
+    "tab-sync",
+    "sync",
+    "crdt",
     "yjs",
     "collaboration",
-    "sync"
+    "multiplayer",
+    "real-time",
+    "realtime"
   ],
   "author": "James Glenn",
   "license": "MIT",
