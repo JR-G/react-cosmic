@@ -28,7 +28,7 @@ import { useOrbitStore } from "../provider.tsx";
  * const isAliceOnline = useOrbitAwareness(states => states.has(aliceClientId));
  * ```
  */
-export function useOrbitAwareness<T = any, S = Map<number, T>>(
+export function useOrbitAwareness<T = unknown, S = Map<number, T>>(
     selector?: (states: Map<number, T>) => S
 ): S {
     const store = useOrbitStore();

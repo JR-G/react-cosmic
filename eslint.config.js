@@ -27,6 +27,9 @@ export default [
         document: "readonly",
         indexedDB: "readonly",
         BroadcastChannel: "readonly",
+        IDBDatabase: "readonly",
+        IDBOpenDBRequest: "readonly",
+        MessageEvent: "readonly",
       },
     },
     plugins: {

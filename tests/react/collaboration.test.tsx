@@ -3,6 +3,10 @@ import { renderHook, act } from "@testing-library/react";
 import { useOrbitStatus } from "../../src/react/collaboration/useOrbitStatus.ts";
 import { useOrbitAwareness } from "../../src/react/collaboration/useOrbitAwareness.ts";
 
+interface TestAwarenessState {
+    user: { name: string };
+}
+
 vi.mock("../../src/react/provider.tsx", () => ({
     useOrbitStore: () => mockStore
 }));
@@ -66,10 +70,10 @@ describe("Collaboration Hooks", () => {
             if (name === "change") awarenessCallback = cb;
         });
 
-        const { result } = renderHook(() => useOrbitAwareness());
+        const { result } = renderHook(() => useOrbitAwareness<TestAwarenessState>());
 
         expect(result.current.size).toBe(2);
-        expect(result.current.get(1).user.name).toBe("Alice");
+        expect(result.current.get(1)?.user.name).toBe("Alice");
 
         act(() => {
             remoteStates.set(3, { user: { name: "Charlie" } });
@@ -77,7 +81,7 @@ describe("Collaboration Hooks", () => {
         });
 
         expect(result.current.size).toBe(3);
-        expect(result.current.get(3).user.name).toBe("Charlie");
+        expect(result.current.get(3)?.user.name).toBe("Charlie");
     });
 
     it("useOrbitAwareness should support selectors", () => {

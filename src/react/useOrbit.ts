@@ -1,4 +1,5 @@
 import { useSyncExternalStore, useCallback, useMemo, useRef, useEffect } from "react";
+import * as Y from "yjs";
 import type { OrbitValue } from "../core/types.ts";
 import { useOrbitStore } from "./provider.tsx";
 
@@ -45,7 +46,7 @@ export function useOrbit<T extends OrbitValue>(
 
   const subscribe = useCallback(
     (callback: () => void) => {
-      const observer = (event: any) => {
+      const observer = (event: Y.YMapEvent<OrbitValue>) => {
         if (event.keysChanged.has(key)) {
           callback();
         }

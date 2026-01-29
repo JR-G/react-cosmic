@@ -5,6 +5,7 @@ import {
   useEffect,
   useRef,
 } from "react";
+import * as Y from "yjs";
 import type { OrbitValue } from "../core/types.ts";
 import { useOrbitStore } from "./provider.tsx";
 
@@ -67,7 +68,7 @@ export function useOrbitObject<T extends object>(
 
   const subscribe = useCallback(
     (callback: () => void) => {
-      const observer = (event: any) => {
+      const observer = (event: Y.YMapEvent<OrbitValue>) => {
         if (event.keysChanged.size > 0) {
           callback();
         }
