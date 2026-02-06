@@ -6,7 +6,7 @@
       "name": "react-cosmic-collab-demo",
       "dependencies": {
         "react": "^18.3.1",
-        "react-cosmic": "^1.0.4",
+        "react-cosmic": "^1.1.0",
         "react-dom": "^18.3.1",
         "y-partykit": "^0.0.25",
       },
@@ -358,7 +358,7 @@
 
     "react": ["react@18.3.1", "", { "dependencies": { "loose-envify": "^1.1.0" } }, "sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ=="],
 
-    "react-cosmic": ["react-cosmic@1.0.4", "", { "dependencies": { "y-websocket": "^2.0.5", "yjs": "^13.6.20" }, "peerDependencies": { "react": "^18.0.0" } }, "sha512-8EELh3EFItSAh518xhawYVUkJp8TrdjYvc4tLI153iWNHJU4sYXA1oPCiaO2V20uZJLNlCSLddL6KwBH+1nbpg=="],
+    "react-cosmic": ["react-cosmic@1.1.0", "", { "dependencies": { "y-websocket": "^2.0.5", "yjs": "^13.6.20" }, "peerDependencies": { "react": "^18.0.0 || ^19.0.0" } }, "sha512-oFK0uDeAuI2WLvUHAUSeN26bAf7V55p7n6I3Oo0NAM87ai9E+8OWeoNBeuPXOtB/109CCS3LLC+3bdOnSFTlfA=="],
 
     "react-dom": ["react-dom@18.3.1", "", { "dependencies": { "loose-envify": "^1.1.0", "scheduler": "^0.23.2" }, "peerDependencies": { "react": "^18.3.1" } }, "sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw=="],
 

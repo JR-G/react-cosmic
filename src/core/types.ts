@@ -103,12 +103,6 @@ export interface OrbitConfig {
     maxFailures?: number;
 
     /**
-     * Maximum number of reconnection attempts for the underlying provider.
-     * Defaults to Infinity.
-     */
-    maxRetries?: number;
-
-    /**
      * Delay in milliseconds between reconnection attempts.
      * Defaults to 3000ms (3 seconds).
      */

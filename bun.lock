@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "react-orbit",
+      "name": "react-cosmic",
       "dependencies": {
         "y-websocket": "^2.0.5",
         "yjs": "^13.6.20",
@@ -32,7 +32,7 @@
         "vitest": "^2.1.8",
       },
       "peerDependencies": {
-        "react": "^18.0.0",
+        "react": "^18.0.0 || ^19.0.0",
       },
     },
   },
