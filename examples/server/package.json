@@ -6,6 +6,6 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "y-websocket": "^2.0.5"
+    "y-websocket": "^3.0.0"
   }
 }
