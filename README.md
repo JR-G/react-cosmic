@@ -13,8 +13,8 @@ const [draft, setDraft] = useOrbit('email-draft', '');
 // That's it. Survives refresh. Syncs across tabs. Zero config.
 ```
 
-**[Live demo](https://react-cosmic.vercel.app)** — tab sync and persistence in action
-**[Collaboration demo](https://react-cosmic-collab.vercel.app)** — real-time multiplayer (open multiple windows)
+- **[Live demo](https://react-cosmic.vercel.app)** — tab sync and persistence in action
+- **[Collaboration demo](https://react-cosmic-collab.vercel.app)** — real-time multiplayer (open multiple windows)
 
 ## The problem
 
