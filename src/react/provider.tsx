@@ -59,7 +59,6 @@ export interface OrbitProviderProps {
    * Optional configuration for WebSocket connection.
    */
   websocketOptions?: {
-    maxRetries?: number;
     retryDelay?: number;
     protocols?: string | string[];
   };
@@ -143,7 +142,9 @@ export function OrbitProvider({
       });
 
     return () => {
-      newStore.dispose();
+      void newStore.dispose().catch((error) => {
+        console.error("[react-cosmic] Failed to dispose store:", error);
+      });
     };
   }, [storeId, enableStorage, enableTabSync, persistDebounceMs, websocketUrl, websocketOptionsKey]);
 

@@ -252,7 +252,9 @@ export class OrbitStore {
     }
 
     this.persistTimer = setTimeout(() => {
-      this.persist();
+      void this.persist().catch((error) => {
+        console.error("[react-cosmic] Failed to persist state:", error);
+      });
     }, this.persistDebounceMs);
   }
 

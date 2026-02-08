@@ -11,7 +11,7 @@
   "dependencies": {
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-cosmic": "^1.0.4",
+    "react-cosmic": "github:JR-G/react-cosmic#v1.1.0",
     "y-partykit": "^0.0.33"
   },
   "devDependencies": {

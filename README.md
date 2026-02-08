@@ -105,7 +105,6 @@ Put this around your app or component tree.
   websocketUrl="ws://localhost:1234"  // optional - sync across devices/users
   websocketOptions={{           // optional - WebSocket config
     retryDelay: 3000,           // reconnect delay in ms
-    maxRetries: Infinity,       // retry attempts
     protocols: ["my-protocol"]  // WebSocket protocols
   }}
 >
