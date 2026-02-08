@@ -10,7 +10,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      'react-cosmic': resolve(__dirname, '../../src/index.ts'),
+      'react-cosmic': resolve(__dirname, 'node_modules/react-cosmic/src/index.ts'),
     },
     dedupe: ['yjs'],
   },
