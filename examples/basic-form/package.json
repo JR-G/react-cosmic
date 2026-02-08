@@ -10,7 +10,7 @@
   "dependencies": {
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-cosmic": "^1.1.0"
+    "react-cosmic": "github:JR-G/react-cosmic#v1.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.1.3",

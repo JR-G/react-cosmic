@@ -6,7 +6,7 @@
       "name": "react-cosmic-collab-demo",
       "dependencies": {
         "react": "^19.2.4",
-        "react-cosmic": "^1.1.0",
+        "react-cosmic": "github:JR-G/react-cosmic#v1.1.0",
         "react-dom": "^19.2.4",
         "y-partykit": "^0.0.33",
       },
@@ -366,7 +366,7 @@
 
     "react": ["react@19.2.4", "", {}, "sha512-9nfp2hYpCwOjAN+8TZFGhtWEwgvWHXqESH8qT89AT/lWklpLON22Lc8pEtnpsZz7VmawabSU0gCjnj8aC0euHQ=="],
 
-    "react-cosmic": ["react-cosmic@1.1.0", "", { "dependencies": { "y-websocket": "^2.0.5", "yjs": "^13.6.20" }, "peerDependencies": { "react": "^18.0.0 || ^19.0.0" } }, "sha512-oFK0uDeAuI2WLvUHAUSeN26bAf7V55p7n6I3Oo0NAM87ai9E+8OWeoNBeuPXOtB/109CCS3LLC+3bdOnSFTlfA=="],
+    "react-cosmic": ["react-cosmic@github:JR-G/react-cosmic#c88c75b", { "dependencies": { "y-websocket": "^2.0.5", "yjs": "^13.6.20" }, "peerDependencies": { "react": "^18.0.0 || ^19.0.0" } }, "JR-G-react-cosmic-c88c75b"],
 
     "react-dom": ["react-dom@19.2.4", "", { "dependencies": { "scheduler": "^0.27.0" }, "peerDependencies": { "react": "^19.2.4" } }, "sha512-AXJdLo8kgMbimY95O2aKQqsz2iWi9jMgKJhRBAxECE4IFxfcazB2LmzloIoibJI3C12IlY20+KFaLv+71bUJeQ=="],
 
