@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useSyncExternalStore, useRef } from "react";
+import { useCallback, useMemo, useSyncExternalStore, useRef, useEffect } from "react";
 import { useOrbitStore } from "../provider.tsx";
 
 /**
@@ -33,14 +33,13 @@ export function useOrbitAwareness<T = unknown, S = Map<number, T>>(
 ): S {
     const store = useOrbitStore();
     const provider = useMemo(() => store.getWebSocketProvider(), [store]);
+    const statesSnapshotRef = useRef<Map<number, T>>(
+        new Map(provider?.awareness?.getStates() || []) as Map<number, T>
+    );
 
-    const statesSnapshotRef = useRef<Map<number, T>>(new Map());
-    const lastProviderRef = useRef(provider);
-
-    if (lastProviderRef.current !== provider || (provider && statesSnapshotRef.current.size === 0)) {
-        lastProviderRef.current = provider;
+    useEffect(() => {
         statesSnapshotRef.current = new Map(provider?.awareness?.getStates() || []) as Map<number, T>;
-    }
+    }, [provider]);
 
     const subscribe = useCallback(
         (callback: () => void) => {

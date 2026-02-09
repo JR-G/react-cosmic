@@ -26,6 +26,7 @@
     "typecheck": "tsc --noEmit",
     "hooks:install": "lefthook install --reset-hooks-path",
     "hooks:run:pre-push": "lefthook run pre-push",
+    "release": "bash scripts/release.sh",
     "docs": "typedoc src/index.ts",
     "demo": "bun --hot examples/basic-form/index.html",
     "demo:collab": "bun --hot examples/websocket-sync/index.html",
@@ -64,6 +65,7 @@
     "yjs": "^13.6.20"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.1.0",
     "@testing-library/react-hooks": "^8.0.1",
@@ -74,7 +76,7 @@
     "@typescript-eslint/eslint-plugin": "^8.19.1",
     "@typescript-eslint/parser": "^8.19.1",
     "@vitest/ui": "^4.0.18",
-    "eslint": "^10.0.0",
+    "eslint": "^9.39.2",
     "eslint-plugin-react": "^7.37.3",
     "eslint-plugin-react-hooks": "^7.0.1",
     "fake-indexeddb": "^6.2.5",
