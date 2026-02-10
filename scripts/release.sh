@@ -19,7 +19,11 @@ esac
 
 version="$major.$minor.$patch"
 
-sed -i '' "s/\"version\": \"$current\"/\"version\": \"$version\"/" package.json
+if [[ "$OSTYPE" == darwin* ]]; then
+  sed -i '' "s/\"version\": \"$current\"/\"version\": \"$version\"/" package.json
+else
+  sed -i "s/\"version\": \"$current\"/\"version\": \"$version\"/" package.json
+fi
 
 git add package.json
 git commit -m "v$version"
