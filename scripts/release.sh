@@ -9,6 +9,10 @@ if [[ "$bump" != "patch" && "$bump" != "minor" && "$bump" != "major" ]]; then
 fi
 
 current=$(node -p "require('./package.json').version")
+if [[ ! "$current" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "Error: invalid version '$current' in package.json (expected major.minor.patch)"
+  exit 1
+fi
 IFS='.' read -r major minor patch <<< "$current"
 
 case "$bump" in
@@ -18,16 +22,25 @@ case "$bump" in
 esac
 
 version="$major.$minor.$patch"
+branch="release/v$version"
 
-if [[ "$OSTYPE" == darwin* ]]; then
-  sed -i '' "s/\"version\": \"$current\"/\"version\": \"$version\"/" package.json
-else
-  sed -i "s/\"version\": \"$current\"/\"version\": \"$version\"/" package.json
-fi
+git checkout -b "$branch"
+
+node -e "
+  const fs = require('fs');
+  const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+  pkg.version = '$version';
+  fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+"
 
 git add package.json
 git commit -m "v$version"
-git tag "v$version"
-git push && git push origin "v$version"
+git push -u origin "$branch"
+gh pr create --title "v$version" --body "Bump version to $version"
 
-echo "Released v$version"
+echo ""
+echo "PR created for v$version"
+echo "Next steps:"
+echo "  1. Wait for CI + CodeRabbit to pass"
+echo "  2. Merge the PR on GitHub"
+echo "  3. Run: bun run release:tag"
