@@ -4,7 +4,7 @@
 
 react-cosmic wraps [Yjs](https://yjs.dev/) CRDTs into `useState`-style React hooks. The core idea: a `Y.Doc` is the single source of truth per `storeId`, and all persistence/sync mechanisms are adapters that feed into or out of that document.
 
-```
+```text
 Browser Tab A                   Browser Tab B
 ┌─────────────────────┐         ┌─────────────────────┐
 │  React Component    │         │  React Component    │
@@ -59,7 +59,7 @@ Each hook follows the same pattern:
 
 ## Data flow on a state update
 
-```
+```text
 User calls setCount(5)
   → Y.Map.set("count", 5)          [Yjs records the operation]
   → Y.Doc emits "update" event

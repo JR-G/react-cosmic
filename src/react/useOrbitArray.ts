@@ -54,9 +54,13 @@ export function useOrbitArray<T extends OrbitValue>(
   const initialRef = useRef(initialValue);
 
   useEffect(() => {
-    if (yarray.length === 0 && initialRef.current.length > 0) {
-      yarray.push([...initialRef.current]);
-    }
+    const doc = yarray.doc;
+    if (doc === null || initialRef.current.length === 0) return;
+    doc.transact(() => {
+      if (yarray.length === 0) {
+        yarray.push([...initialRef.current]);
+      }
+    });
   }, [yarray]);
 
   const subscribe = useCallback(
@@ -95,9 +99,15 @@ export function useOrbitArray<T extends OrbitValue>(
         yarray.push(items);
       },
       insert(index: number, item: T) {
+        if (index < 0 || index > yarray.length) {
+          throw new RangeError(`insert index ${index} is out of bounds for array of length ${yarray.length}`);
+        }
         yarray.insert(index, [item]);
       },
       remove(index: number) {
+        if (index < 0 || index >= yarray.length) {
+          throw new RangeError(`remove index ${index} is out of bounds for array of length ${yarray.length}`);
+        }
         yarray.delete(index, 1);
       },
       clear() {

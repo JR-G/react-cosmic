@@ -8,7 +8,7 @@ A React hooks library wrapping Yjs CRDTs. State persists to IndexedDB, syncs acr
 
 ## Architecture
 
-```
+```text
 src/
 ├── core/
 │   ├── store.ts              OrbitStore — Yjs doc, storage, tab sync, WebSocket, circuit breaker

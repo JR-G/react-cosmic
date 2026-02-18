@@ -42,7 +42,7 @@ Tests live in `tests/`. Run `bun run test:file` before pushing (the Lefthook pre
 
 File organisation:
 
-```
+```text
 tests/
 ├── core/           Unit tests for OrbitStore, storage adapters, text-diff utility
 ├── react/          Integration tests for hooks using real OrbitStore + fake-indexeddb

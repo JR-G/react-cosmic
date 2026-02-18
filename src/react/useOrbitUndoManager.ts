@@ -36,6 +36,11 @@ export interface UndoManagerResult {
  * @param scope - Which Yjs type the key maps to (default: 'text')
  * @returns Undo/redo controls and availability flags
  *
+ * @remarks
+ * Changing `key` or `scope` creates a new `UndoManager` instance, which clears
+ * all undo history for the previous key. Keep `key` and `scope` stable to
+ * preserve history across re-renders.
+ *
  * @example
  * ```typescript
  * function TextEditor() {
@@ -81,6 +86,7 @@ export function useOrbitUndoManager(
     manager.on('stack-item-added', update);
     manager.on('stack-item-popped', update);
     manager.on('stack-cleared', update);
+    update();
 
     return () => {
       manager.off('stack-item-added', update);

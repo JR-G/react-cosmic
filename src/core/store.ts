@@ -219,9 +219,33 @@ export class OrbitStore {
   }
 
   /**
+   * Resets the WebSocket circuit breaker and attempts to reconnect.
+   *
+   * After the circuit breaker trips, the store stops attempting to reconnect.
+   * Call this method to clear the tripped state and resume reconnection attempts
+   * (for example, after the user confirms the server is available again).
+   *
+   * @remarks
+   * No-op if WebSockets are not configured or the circuit has not tripped.
+   */
+  resetCircuit(): void {
+    if (this.websocketProvider === undefined || !this.circuitTripped) {
+      return;
+    }
+
+    this.circuitTripped = false;
+    this.websocketFailures = 0;
+    this.websocketProvider.shouldConnect = true;
+    this.websocketProvider.connect();
+    this.currentStatus = 'connecting';
+    this.statusListeners.forEach((l) => l());
+  }
+
+  /**
    * Subscribes to connection status changes.
    *
-   * @param listener - Callback function invoked when connection status changes
+   * @param listener - Callback invoked when connection status changes. Call
+   *   `store.getStatus()` inside the listener to read the new status.
    * @remarks Most users should use the useOrbitStatus hook instead
    */
   onStatusChange(listener: () => void): void {
@@ -250,10 +274,19 @@ export class OrbitStore {
     }
 
     this.websocketProvider.on("status", (event: { status: string }) => {
+      const validStatuses = ['connected', 'connecting', 'disconnected'] as const;
+      type ValidStatus = typeof validStatuses[number];
+      const isValid = (s: string): s is ValidStatus => (validStatuses as readonly string[]).includes(s);
+
+      if (!isValid(event.status)) {
+        console.warn(`[react-cosmic] Unexpected WebSocket status: "${event.status}"`);
+        return;
+      }
+
       if (event.status === "connected") {
         this.websocketFailures = 0;
       }
-      this.currentStatus = event.status as 'connected' | 'connecting' | 'disconnected';
+      this.currentStatus = event.status;
       this.statusListeners.forEach((l) => l());
     });
 
