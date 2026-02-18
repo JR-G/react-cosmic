@@ -61,6 +61,8 @@ export class OrbitStore {
   private initialized = false;
   private websocketFailures = 0;
   private readonly maxWebsocketFailures: number;
+  private currentStatus: 'connected' | 'connecting' | 'disconnected' = 'disconnected';
+  private circuitTripped = false;
 
   readonly storeId: string;
 
@@ -193,7 +195,28 @@ export class OrbitStore {
     return this.websocketProvider;
   }
 
-  private statusListeners = new Set<(status: string) => void>();
+  private statusListeners = new Set<() => void>();
+
+  /**
+   * Returns the current WebSocket connection status.
+   *
+   * @returns 'connected', 'connecting', or 'disconnected'
+   */
+  getStatus(): 'connected' | 'connecting' | 'disconnected' {
+    return this.currentStatus;
+  }
+
+  /**
+   * Returns whether the WebSocket circuit breaker has tripped.
+   *
+   * When tripped, the store has stopped attempting to reconnect after
+   * consecutive failures. The app continues to work with local and tab sync.
+   *
+   * @returns true if the circuit breaker is open (reconnection stopped)
+   */
+  isCircuitOpen(): boolean {
+    return this.circuitTripped;
+  }
 
   /**
    * Subscribes to connection status changes.
@@ -201,7 +224,7 @@ export class OrbitStore {
    * @param listener - Callback function invoked when connection status changes
    * @remarks Most users should use the useOrbitStatus hook instead
    */
-  onStatusChange(listener: (status: string) => void): void {
+  onStatusChange(listener: () => void): void {
     this.statusListeners.add(listener);
   }
 
@@ -210,7 +233,7 @@ export class OrbitStore {
    *
    * @param listener - The listener to remove
    */
-  offStatusChange(listener: (status: string) => void): void {
+  offStatusChange(listener: () => void): void {
     this.statusListeners.delete(listener);
   }
 
@@ -230,7 +253,8 @@ export class OrbitStore {
       if (event.status === "connected") {
         this.websocketFailures = 0;
       }
-      this.statusListeners.forEach((l) => l(event.status));
+      this.currentStatus = event.status as 'connected' | 'connecting' | 'disconnected';
+      this.statusListeners.forEach((l) => l());
     });
 
     this.websocketProvider.on("connection-error", () => {
@@ -238,7 +262,9 @@ export class OrbitStore {
       if (this.websocketFailures >= this.maxWebsocketFailures && this.websocketProvider) {
         this.websocketProvider.shouldConnect = false;
         this.websocketProvider.disconnect();
-        this.statusListeners.forEach((l) => l("disconnected"));
+        this.circuitTripped = true;
+        this.currentStatus = 'disconnected';
+        this.statusListeners.forEach((l) => l());
       }
     });
   }

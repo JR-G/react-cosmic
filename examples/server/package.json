@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "start": "bun run server.ts"
   },
   "dependencies": {
     "y-websocket": "^3.0.0"

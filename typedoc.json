@@ -1,0 +1,13 @@
+{
+  "entryPoints": ["src/index.ts"],
+  "out": "docs/api",
+  "name": "react-cosmic",
+  "readme": "README.md",
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "includeVersion": true,
+  "categorizeByGroup": true,
+  "categoryOrder": ["Provider", "Hooks", "Collaboration", "Advanced", "*"],
+  "plugin": [],
+  "tsconfig": "tsconfig.json"
+}
