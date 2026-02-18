@@ -2,7 +2,6 @@
 
 [![CI](https://github.com/JR-G/react-cosmic/actions/workflows/ci.yml/badge.svg)](https://github.com/JR-G/react-cosmic/actions)
 [![npm version](https://img.shields.io/npm/v/react-cosmic)](https://www.npmjs.com/package/react-cosmic)
-[![npm bundle size](https://img.shields.io/npm/unpacked-size/react-cosmic)](https://www.npmjs.com/package/react-cosmic)
 
 <img width="470" height="600" alt="react-cosmic" src="https://github.com/user-attachments/assets/d958c7ac-2e8a-4641-aaf5-87e006d80515" />
 
