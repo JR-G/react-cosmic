@@ -195,7 +195,7 @@ export class OrbitStore {
     return this.websocketProvider;
   }
 
-  private statusListeners = new Set<() => void>();
+  private statusListeners = new Set<(status: 'connected' | 'connecting' | 'disconnected') => void>();
 
   /**
    * Returns the current WebSocket connection status.
@@ -238,17 +238,17 @@ export class OrbitStore {
     this.websocketProvider.shouldConnect = true;
     this.websocketProvider.connect();
     this.currentStatus = 'connecting';
-    this.statusListeners.forEach((l) => l());
+    this.statusListeners.forEach((l) => l(this.currentStatus));
   }
 
   /**
    * Subscribes to connection status changes.
    *
-   * @param listener - Callback invoked when connection status changes. Call
-   *   `store.getStatus()` inside the listener to read the new status.
+   * @param listener - Callback invoked when connection status changes.
+   *   The new status is passed as the first argument.
    * @remarks Most users should use the useOrbitStatus hook instead
    */
-  onStatusChange(listener: () => void): void {
+  onStatusChange(listener: (status: 'connected' | 'connecting' | 'disconnected') => void): void {
     this.statusListeners.add(listener);
   }
 
@@ -257,7 +257,7 @@ export class OrbitStore {
    *
    * @param listener - The listener to remove
    */
-  offStatusChange(listener: () => void): void {
+  offStatusChange(listener: (status: 'connected' | 'connecting' | 'disconnected') => void): void {
     this.statusListeners.delete(listener);
   }
 
@@ -287,7 +287,7 @@ export class OrbitStore {
         this.websocketFailures = 0;
       }
       this.currentStatus = event.status;
-      this.statusListeners.forEach((l) => l());
+      this.statusListeners.forEach((l) => l(this.currentStatus));
     });
 
     this.websocketProvider.on("connection-error", () => {
@@ -297,7 +297,7 @@ export class OrbitStore {
         this.websocketProvider.disconnect();
         this.circuitTripped = true;
         this.currentStatus = 'disconnected';
-        this.statusListeners.forEach((l) => l());
+        this.statusListeners.forEach((l) => l(this.currentStatus));
       }
     });
   }

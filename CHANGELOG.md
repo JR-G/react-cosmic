@@ -32,27 +32,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `useOrbitArray` initialisation is now performed inside a Yjs transaction to prevent
   double-push under React StrictMode
 
-### Breaking changes
-
-**`OrbitStore.onStatusChange` / `OrbitStore.offStatusChange` listener signature changed.**
-
-Previously the listener received the status string as an argument:
-
-```ts
-store.onStatusChange((status: string) => { /* use status */ });
-```
-
-The listener now receives no arguments. Read the status from `store.getStatus()` inside
-the listener:
-
-```ts
-store.onStatusChange(() => {
-  const status = store.getStatus(); // 'connected' | 'connecting' | 'disconnected'
-});
-```
-
-This only affects code that calls `OrbitStore.onStatusChange` directly. The `useOrbitStatus`
-hook is unaffected.
 
 ## [1.0.0] - 2026-01-07
 

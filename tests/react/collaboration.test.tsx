@@ -19,12 +19,14 @@ interface MockProvider {
   awareness: MockAwareness;
 }
 
+type StatusListener = (status: 'connected' | 'connecting' | 'disconnected') => void;
+
 interface MockStore {
   getWebSocketProvider(): MockProvider | undefined;
   getStatus(): 'connected' | 'connecting' | 'disconnected';
   isCircuitOpen(): boolean;
-  onStatusChange(listener: () => void): void;
-  offStatusChange(listener: () => void): void;
+  onStatusChange(listener: StatusListener): void;
+  offStatusChange(listener: StatusListener): void;
 }
 
 vi.mock("../../src/react/provider.tsx", () => ({
@@ -33,7 +35,7 @@ vi.mock("../../src/react/provider.tsx", () => ({
 
 let mockStore: MockStore;
 let mockProvider: MockProvider;
-let statusCallbacks: Array<() => void> = [];
+let statusCallbacks: Array<StatusListener> = [];
 let mockStatus: 'connected' | 'connecting' | 'disconnected' = 'disconnected';
 let mockCircuitOpen = false;
 
@@ -57,7 +59,7 @@ describe("Collaboration Hooks", () => {
       getWebSocketProvider: vi.fn().mockReturnValue(mockProvider),
       getStatus: vi.fn(() => mockStatus),
       isCircuitOpen: vi.fn(() => mockCircuitOpen),
-      onStatusChange: vi.fn((cb: () => void) => statusCallbacks.push(cb)),
+      onStatusChange: vi.fn((cb: StatusListener) => statusCallbacks.push(cb)),
       offStatusChange: vi.fn(),
     };
   });
@@ -71,13 +73,13 @@ describe("Collaboration Hooks", () => {
 
       act(() => {
         mockStatus = 'connected';
-        statusCallbacks.forEach(cb => cb());
+        statusCallbacks.forEach(cb => cb('connected'));
       });
       expect(result.current).toBe("connected");
 
       act(() => {
         mockStatus = 'disconnected';
-        statusCallbacks.forEach(cb => cb());
+        statusCallbacks.forEach(cb => cb('disconnected'));
       });
       expect(result.current).toBe("disconnected");
     });
@@ -102,7 +104,7 @@ describe("Collaboration Hooks", () => {
 
       act(() => {
         mockCircuitOpen = true;
-        statusCallbacks.forEach(cb => cb());
+        statusCallbacks.forEach(cb => cb('disconnected'));
       });
 
       expect(result.current).toBe(true);
