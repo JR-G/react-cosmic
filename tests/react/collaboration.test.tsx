@@ -60,7 +60,10 @@ describe("Collaboration Hooks", () => {
       getStatus: vi.fn(() => mockStatus),
       isCircuitOpen: vi.fn(() => mockCircuitOpen),
       onStatusChange: vi.fn((cb: StatusListener) => statusCallbacks.push(cb)),
-      offStatusChange: vi.fn(),
+      offStatusChange: vi.fn((cb: StatusListener) => {
+        const idx = statusCallbacks.indexOf(cb);
+        if (idx !== -1) statusCallbacks.splice(idx, 1);
+      }),
     };
   });
 
