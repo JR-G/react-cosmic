@@ -1,7 +1,6 @@
 # React Cosmic
 
 [![CI](https://github.com/JR-G/react-cosmic/actions/workflows/ci.yml/badge.svg)](https://github.com/JR-G/react-cosmic/actions)
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/react-cosmic)](https://bundlephobia.com/package/react-cosmic)
 [![npm version](https://img.shields.io/npm/v/react-cosmic)](https://www.npmjs.com/package/react-cosmic)
 
 <img width="470" height="600" alt="react-cosmic" src="https://github.com/user-attachments/assets/d958c7ac-2e8a-4641-aaf5-87e006d80515" />
@@ -56,7 +55,10 @@ import {
   useOrbit,
   useOrbitText,
   useOrbitObject,
+  useOrbitArray,
+  useOrbitUndoManager,
   useOrbitStatus,
+  useOrbitCircuit,
   useOrbitAwareness,
   useSetLocalAwareness
 } from 'react-cosmic';
@@ -142,6 +144,30 @@ const [user, updateUser] = useOrbitObject('user', {
 updateUser({ age: 25 });  // only updates age, keeps name and email
 ```
 
+### `useOrbitArray<T>(key, initialValue?)`
+
+For ordered lists. Concurrent inserts and deletes from multiple clients merge correctly.
+
+```tsx
+const [todos, { push, insert, remove, clear }] = useOrbitArray<string>('todos', []);
+
+push('Buy milk');           // append
+insert(0, 'First item');    // insert at index
+remove(1);                  // remove at index
+clear();                    // remove all
+```
+
+### `useOrbitUndoManager(key, scope?)`
+
+Undo/redo scoped to a single Orbit key. Operations within 500ms are grouped into one step.
+
+```tsx
+const [content, setContent] = useOrbitText('doc', '');
+const { undo, redo, canUndo, canRedo } = useOrbitUndoManager('doc', 'text');
+
+// scope: 'text' (default) | 'map' | 'array'
+```
+
 ### `useOrbitStatus()`
 
 Track WebSocket connection status. Returns `'connected'`, `'connecting'`, or `'disconnected'`.
@@ -177,6 +203,18 @@ return (
 ```
 
 Only works when `websocketUrl` is configured.
+
+### `useOrbitCircuit()`
+
+Returns `true` when the WebSocket circuit breaker has tripped (stopped reconnecting after repeated failures). The app continues to work with local + tab sync.
+
+```tsx
+const circuitOpen = useOrbitCircuit();
+
+if (circuitOpen) {
+  return <Banner>Working offline — server unreachable</Banner>;
+}
+```
 
 ### `useSetLocalAwareness<T>(state)`
 
@@ -284,6 +322,12 @@ Then connect your app:
 Now users on different devices see each other's changes in real-time. The CRDT handles all conflict resolution automatically - whether it's two tabs, two users, or twenty.
 
 For production, you'll want auth, persistence, and proper scaling. Check out `y-websocket` docs, [PartyKit](https://partykit.io), or other hosted Yjs providers.
+
+## Docs
+
+- [Architecture](docs/architecture.md) — how OrbitStore, storage, tab sync, and WebSocket fit together
+- [Contributing](docs/contributing.md) — setup, conventions, and release process
+- [Troubleshooting](docs/troubleshooting.md) — common issues and fixes
 
 ## License
 

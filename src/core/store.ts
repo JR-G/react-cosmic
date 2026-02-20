@@ -61,6 +61,8 @@ export class OrbitStore {
   private initialized = false;
   private websocketFailures = 0;
   private readonly maxWebsocketFailures: number;
+  private currentStatus: 'connected' | 'connecting' | 'disconnected' = 'disconnected';
+  private circuitTripped = false;
 
   readonly storeId: string;
 
@@ -193,15 +195,60 @@ export class OrbitStore {
     return this.websocketProvider;
   }
 
-  private statusListeners = new Set<(status: string) => void>();
+  private statusListeners = new Set<(status: 'connected' | 'connecting' | 'disconnected') => void>();
+
+  /**
+   * Returns the current WebSocket connection status.
+   *
+   * @returns 'connected', 'connecting', or 'disconnected'
+   */
+  getStatus(): 'connected' | 'connecting' | 'disconnected' {
+    return this.currentStatus;
+  }
+
+  /**
+   * Returns whether the WebSocket circuit breaker has tripped.
+   *
+   * When tripped, the store has stopped attempting to reconnect after
+   * consecutive failures. The app continues to work with local and tab sync.
+   *
+   * @returns true if the circuit breaker is open (reconnection stopped)
+   */
+  isCircuitOpen(): boolean {
+    return this.circuitTripped;
+  }
+
+  /**
+   * Resets the WebSocket circuit breaker and attempts to reconnect.
+   *
+   * After the circuit breaker trips, the store stops attempting to reconnect.
+   * Call this method to clear the tripped state and resume reconnection attempts
+   * (for example, after the user confirms the server is available again).
+   *
+   * @remarks
+   * No-op if WebSockets are not configured or the circuit has not tripped.
+   */
+  resetCircuit(): void {
+    if (this.websocketProvider === undefined || !this.circuitTripped) {
+      return;
+    }
+
+    this.circuitTripped = false;
+    this.websocketFailures = 0;
+    this.websocketProvider.shouldConnect = true;
+    this.websocketProvider.connect();
+    this.currentStatus = 'connecting';
+    this.statusListeners.forEach((l) => l(this.currentStatus));
+  }
 
   /**
    * Subscribes to connection status changes.
    *
-   * @param listener - Callback function invoked when connection status changes
+   * @param listener - Callback invoked when connection status changes.
+   *   The new status is passed as the first argument.
    * @remarks Most users should use the useOrbitStatus hook instead
    */
-  onStatusChange(listener: (status: string) => void): void {
+  onStatusChange(listener: (status: 'connected' | 'connecting' | 'disconnected') => void): void {
     this.statusListeners.add(listener);
   }
 
@@ -210,7 +257,7 @@ export class OrbitStore {
    *
    * @param listener - The listener to remove
    */
-  offStatusChange(listener: (status: string) => void): void {
+  offStatusChange(listener: (status: 'connected' | 'connecting' | 'disconnected') => void): void {
     this.statusListeners.delete(listener);
   }
 
@@ -227,10 +274,20 @@ export class OrbitStore {
     }
 
     this.websocketProvider.on("status", (event: { status: string }) => {
+      const validStatuses = ['connected', 'connecting', 'disconnected'] as const;
+      type ValidStatus = typeof validStatuses[number];
+      const isValid = (s: string): s is ValidStatus => (validStatuses as readonly string[]).includes(s);
+
+      if (!isValid(event.status)) {
+        console.warn(`[react-cosmic] Unexpected WebSocket status: "${event.status}"`);
+        return;
+      }
+
       if (event.status === "connected") {
         this.websocketFailures = 0;
       }
-      this.statusListeners.forEach((l) => l(event.status));
+      this.currentStatus = event.status;
+      this.statusListeners.forEach((l) => l(this.currentStatus));
     });
 
     this.websocketProvider.on("connection-error", () => {
@@ -238,7 +295,9 @@ export class OrbitStore {
       if (this.websocketFailures >= this.maxWebsocketFailures && this.websocketProvider) {
         this.websocketProvider.shouldConnect = false;
         this.websocketProvider.disconnect();
-        this.statusListeners.forEach((l) => l("disconnected"));
+        this.circuitTripped = true;
+        this.currentStatus = 'disconnected';
+        this.statusListeners.forEach((l) => l(this.currentStatus));
       }
     });
   }

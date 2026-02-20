@@ -1,5 +1,6 @@
 import { useSyncExternalStore, useCallback, useMemo, useEffect } from "react";
 import { useOrbitStore } from "./provider.tsx";
+import { computeTextDiff } from "../core/text-diff.ts";
 
 /**
  * Hook for managing collaborative text with CRDT semantics.
@@ -64,37 +65,14 @@ export function useOrbitText(
       const oldText = ytext.toString();
       if (oldText === newText) return;
 
-      let commonPrefix = 0;
-      while (
-        commonPrefix < oldText.length &&
-        commonPrefix < newText.length &&
-        oldText[commonPrefix] === newText[commonPrefix]
-      ) {
-        commonPrefix++;
-      }
-
-      let commonSuffix = 0;
-      while (
-        commonSuffix < oldText.length - commonPrefix &&
-        commonSuffix < newText.length - commonPrefix &&
-        oldText[oldText.length - 1 - commonSuffix] ===
-        newText[newText.length - 1 - commonSuffix]
-      ) {
-        commonSuffix++;
-      }
+      const { commonPrefix, commonSuffix } = computeTextDiff(oldText, newText);
 
       store.getYDoc().transact(() => {
         if (commonPrefix + commonSuffix < oldText.length) {
-          ytext.delete(
-            commonPrefix,
-            oldText.length - commonPrefix - commonSuffix
-          );
+          ytext.delete(commonPrefix, oldText.length - commonPrefix - commonSuffix);
         }
         if (commonPrefix + commonSuffix < newText.length) {
-          ytext.insert(
-            commonPrefix,
-            newText.slice(commonPrefix, newText.length - commonSuffix)
-          );
+          ytext.insert(commonPrefix, newText.slice(commonPrefix, newText.length - commonSuffix));
         }
       });
     },

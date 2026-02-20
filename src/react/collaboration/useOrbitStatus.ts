@@ -34,24 +34,19 @@ import { useOrbitStore } from "../provider.tsx";
 export type ConnectionStatus = 'connected' | 'connecting' | 'disconnected';
 
 export function useOrbitStatus(): ConnectionStatus {
-    const store = useOrbitStore();
+  const store = useOrbitStore();
 
-    const subscribe = useCallback(
-        (callback: () => void) => {
-            store.onStatusChange(callback);
-            return () => {
-                store.offStatusChange(callback);
-            };
-        },
-        [store]
-    );
+  const subscribe = useCallback(
+    (callback: () => void) => {
+      store.onStatusChange(callback);
+      return () => {
+        store.offStatusChange(callback);
+      };
+    },
+    [store]
+  );
 
-    const getSnapshot = useCallback(() => {
-        const provider = store.getWebSocketProvider();
-        if (!provider) return "disconnected";
+  const getSnapshot = useCallback(() => store.getStatus(), [store]);
 
-        return provider.wsconnected ? "connected" : provider.wsconnecting ? "connecting" : "disconnected";
-    }, [store]);
-
-    return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }

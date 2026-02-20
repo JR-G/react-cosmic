@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- `useOrbitArray` hook — ordered list state backed by `Y.Array` with `push`, `insert`, `remove`, `clear`
+- `useOrbitUndoManager` hook — scoped Yjs `UndoManager` per key, supports `text`/`map`/`array` scope
+- `useOrbitCircuit` hook — observe whether the WebSocket circuit breaker has tripped
+- `OrbitStore.getStatus()` — read the current connection status without a listener
+- `OrbitStore.isCircuitOpen()` — check whether the circuit breaker has tripped
+- `OrbitStore.resetCircuit()` — clear the tripped circuit and resume reconnection attempts
+- `docs/architecture.md`, `docs/contributing.md`, `docs/troubleshooting.md`
+- `AGENTS.md` — guidance for AI agents working on the codebase
+- `typedoc.json` — TypeDoc configuration
+- `@vitest/coverage-v8` dev dependency; coverage CI job
+
+### Changed
+- `useOrbitStatus` now reads status from `OrbitStore.getStatus()` instead of internal
+  `y-websocket` properties (`wsconnected`/`wsconnecting`), making it resilient to provider
+  upgrades
+
+### Fixed
+- `OrbitStore` validates the value from y-websocket's `status` event before assigning it
+  to `currentStatus`; unexpected values are warned and discarded rather than stored
+- `useOrbitArray.insert` and `useOrbitArray.remove` now throw `RangeError` on out-of-bounds
+  indices
+- `useOrbitArray` initialisation is now performed inside a Yjs transaction to prevent
+  double-push under React StrictMode
+
+
 ## [1.0.0] - 2026-01-07
 
 ### Added
