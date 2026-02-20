@@ -87,8 +87,7 @@ describe("Collaboration Hooks", () => {
       expect(result.current).toBe("disconnected");
     });
 
-    it("should return disconnected when no WebSocket provider", () => {
-      (mockStore.getWebSocketProvider as ReturnType<typeof vi.fn>).mockReturnValue(undefined);
+    it("should return disconnected when store status is disconnected", () => {
       mockStatus = 'disconnected';
 
       const { result } = renderHook(() => useOrbitStatus());
