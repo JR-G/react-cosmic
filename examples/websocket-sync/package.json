@@ -11,12 +11,12 @@
   "dependencies": {
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-cosmic": "github:JR-G/react-cosmic#v1.1.0",
+    "react-cosmic": "github:JR-G/react-cosmic#v1.2.0",
     "y-partykit": "^0.0.33"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^5.1.3",
+    "@vitejs/plugin-react": "^6.0.1",
     "partykit": "^0.0.115",
-    "vite": "^7.3.1"
+    "vite": "^8.0.3"
   }
 }
